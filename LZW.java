@@ -21,10 +21,9 @@ public class LZW {
         for (char next : uncompressed.toCharArray()) {
             String combined = current + next;
             if (dictionary.containsKey(combined))//checks if combined is already in dictionary
-                current = combined;
+                current = combined;//if yes, then combined characters become the current and continues to find similar characters 
             else {
-                encodedValues.add(dictionary.get(current));
-                // Add combined letters to the dictionary
+                encodedValues.add(dictionary.get(current));//if it is not already in the dict, then the combination gets added to the dict with a new index value. EncodedValues also updates. 
                 dictionary.put(combined, dictSize++);
                 current = "" + next;
             }
@@ -36,7 +35,7 @@ public class LZW {
         return convertToBinary(encodedValues);
     }
 	/*
-	 * This method takes a list of ascii dictionary values and outputs them in binary.
+	 * This method takes a list of ascii dictionary values and outputs them in a list of binary values.
 	 */
 	public static List<Integer> convertToBinary(List<Integer> list) {
 		List<Integer> binaryValues= new ArrayList<Integer>();
@@ -69,7 +68,7 @@ public class LZW {
             while( (line = reader.readLine()) != null){//the bufferedreader reads each line of lzw-file, passes it onto the "compress" method that performs LZW compression, then the writer writes that line into the file.
             	List<Integer> compressed = compress(line);
             	for (Integer value: compressed) {
-            		writer.write(value + " ");
+            		writer.write(value + " ");//writer writes the line of converted binary values to the file
             	}
             }
         }finally {
