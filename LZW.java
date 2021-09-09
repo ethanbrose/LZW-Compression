@@ -55,19 +55,27 @@ public class LZW {
 	
 	public static void main(String[] args) throws IOException {
 		String filename = "lzw-file3.txt";
-        BufferedReader br = null;
+		FileWriter binaryFile;
+        BufferedReader reader = null;
+        BufferedWriter writer = null; 
         String line = "";
         try {
-            br = new BufferedReader(new FileReader(filename));
-            System.out.println("---------Contents of the file-----------\n");
-            while( (line = br.readLine()) != null){//the bufferedreader reads each line, stores it, and passes it onto the "compress" method that performs LZW compression.
+        	binaryFile = new FileWriter("binaryOutput.txt");
+        	
+            reader = new BufferedReader(new FileReader(filename));//initialized reader
+            
+            writer = new BufferedWriter(binaryFile);//initialized writer
+            
+            while( (line = reader.readLine()) != null){//the bufferedreader reads each line of lzw-file, passes it onto the "compress" method that performs LZW compression, then the writer writes that line into the file.
             	List<Integer> compressed = compress(line);
-                System.out.println(compressed);
+            	for (Integer value: compressed) {
+            		writer.write(value + " ");
+            	}
             }
         }finally {
-        	br.close();
+        	reader.close();
+        	writer.close();
+        	System.out.println("Done.");
         }
-        
     }
-	
 }
