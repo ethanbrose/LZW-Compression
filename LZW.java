@@ -12,61 +12,48 @@ import java.util.*;
 
 public class LZW {
 	
-	public static String compress(String uncompressed) {
+	public static List<Integer> compress(String uncompressed) {
         // Build the dictionary.
-        int maximumSize = 512;
+        int dictSize = 256;
         Map<String,Integer> dictionary = new HashMap<String,Integer>();
         for (int i = 0; i < 256; i++)//load ascii table 
             dictionary.put("" + (char)i, i);
-        String output = "";
-        
+ 
         String current = "";
+        List<Integer> encodedValues = new ArrayList<Integer>();
         for (char next : uncompressed.toCharArray()) {
             String combined = current + next;
             if (dictionary.containsKey(combined))//checks if combined is already in dictionary
-                current = combined;//if yes, then combined characters become the current and continues to find similar characters 
+                current = combined;
             else {
-                output += Integer.toBinaryString(dictionary.get(current)); 
-                if (dictionary.size()<maximumSize)
-                	dictionary.put(combined, maximumSize++);
+                encodedValues.add(dictionary.get(current));
+                // Add combined letters to the dictionary
+                dictionary.put(combined, dictSize++);
                 current = "" + next;
             }
         }
+ 
+        // Output the ascii code for each character(s) in encodedValues.
         if (!current.equals(""))
-            output+= Integer.toBinaryString(dictionary.get(current));
-        return output;
+            encodedValues.add(dictionary.get(current));
+        return encodedValues;
     }
 	
 	
 	public static void main(String[] args) throws IOException {
 		String filename = "lzw-file1.txt";
-		FileOutputStream fileOut = new FileOutputStream(new File("binaryOutput"));
-        DataOutputStream dataOut = new DataOutputStream(fileOut);
-        BufferedReader reader = null;
+        BufferedReader br = null;
         String line = "";
-        String input = "";
-        String inputBinary="";
-        
         try {
-            reader = new BufferedReader(new FileReader(filename));//initialized reader
-            while((line = reader.readLine()) != null){//the bufferedreader reads each line of lzw-file, passes it onto the "compress" method that performs LZW compression, then the writer writes that line into the file.
-          	  input += line;//writer writes the line of converted binary values to the file
-              }
-          
-          dataOut.writeBytes(compress(input));
-          inputBinary = "";
-          char[] inputChars = input.toCharArray();
-          for (char c : inputChars) {
-              inputBinary += Integer.toBinaryString(c);
-          }
-          
+            br = new BufferedReader(new FileReader(filename));
+            System.out.println("Output:");
+            while((line = br.readLine()) != null){//the bufferedreader reads each line, stores it, and passes it onto the "compress" method that performs LZW compression.
+            	List<Integer> compressed = compress(line);
+                System.out.println(compressed);
+            }
         }finally {
-        	reader.close();
-        	dataOut.close();
-        	fileOut.close();
-        	System.out.println("Done.");
-        	System.out.println("Input: " + inputBinary);
-        	System.out.println("Output: " + compress(input));
+        	br.close();
         }
+        
     }
 }
