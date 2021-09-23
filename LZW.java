@@ -1,5 +1,6 @@
 
 import java.io.BufferedReader;
+import java.lang.*;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -12,11 +13,11 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class LZW {
-	public static List<Integer> compress(String uncompressed) {s
+	public static List<Integer> compress(String uncompressed) {
 		// Build the dictionary.
 		int dictSize = 256;
 		Map<String,Integer> dictionary = new HashMap<String,Integer>();
-		for (int i = 0; i < 256; i++)//load ascii table 
+		for (int i = 0; i < 256; i++)//initializes ascii table 
 			dictionary.put("" + (char)i, i);
 		String current = "";
 		List<Integer> encodedValues = new ArrayList<Integer>();
@@ -43,8 +44,8 @@ public class LZW {
 		int counter=256; // keeps track of how big the hash map is 
 		HashMap <Integer, String> map = new HashMap <Integer,String> (); // intialized and delcares hash map 
 		int current=0; 
-		int next=0; 
-		String word="";// this will eventually be the whole word that will get returned 
+		int next=0;
+		String output="";// initializes the decompressor output
 		String combined ="";// string that contains current and next as one string 
 		String wordC=""; // the string version of the number of the current value
 		String wordN=""; // the string version of the number of the next value
@@ -53,7 +54,7 @@ public class LZW {
 		}
 		int size=numbers.size();
 		for (int i=0; i<size; i++){
-			if (i<numbers.size()-1){ // makess sure that you wont get out of bounds
+			if (i<size-1){ // makes sure that you wont get out of bounds
 				current=numbers.get(i); // gets first thing in arraylist
 				next=numbers.get(i+1); // gets second thing in arraylist
 				if (next<counter){ // checks to see that next is already in the dictionary
@@ -74,15 +75,26 @@ public class LZW {
 		}
 		for (int i=0; i<numbers.size(); i++){
 			int index=numbers.get(i);
-			word+=map.get(index);
+			output+=map.get(index);
 		}
-		return (word); 
+		return (output);
+	}
+	
+	public static void writeToFile(List<Integer>numbers) throws FileNotFoundException
+	{
+		String output = decompress(numbers); //initializes the string that we would like to make a text file using decompress
+		PrintWriter out = new PrintWriter("DecompressedFile.txt");
+		out.println(output);
+		out.close();
 	}
 
 	public static void main(String[] args) throws IOException {
+		Long initialTime = System.currentTimeMillis();
+		
 		String filename = ("lzw-file1.txt");
 		BufferedReader br = null;
 		String line = "";
+		//List<Integer> compressed = compress(line);
 		try {
 			br = new BufferedReader(new FileReader(filename));
 			System.out.println("Output:");
@@ -95,6 +107,9 @@ public class LZW {
 		}finally {
 			br.close();
 		}
+		//writeToFile(compressed);
+		Long finalTime=System.currentTimeMillis();
+		System.out.println(finalTime-initialTime);
 
 	}
 } 
